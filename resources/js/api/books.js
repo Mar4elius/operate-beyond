@@ -15,7 +15,7 @@ const BooksApi = {
      *
 	 * @return JSON response
 	 */
-	store: () => axios.post('api/v1/books', payload),
+	store: (payload) => axios.post('api/v1/books', payload),
 };
 
 export default BooksApi;

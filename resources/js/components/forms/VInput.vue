@@ -32,6 +32,7 @@
         ease-in-out
       "
       :class="{ 'bg-red-200': false }"
+      :maxlength="maxlength"
     />
   </div>
 </template>
@@ -66,6 +67,11 @@ export default {
       type: Boolean,
       default: false,
     },
+
+    maxlength: {
+        type: Number,
+        default: '524288'
+    }
   },
   setup(props, { emit }) {
     const inputValue = computed({

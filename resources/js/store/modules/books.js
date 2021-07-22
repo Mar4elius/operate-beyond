@@ -16,8 +16,8 @@ const actions = {
 		return BooksApi.search();
 	},
 
-    store() {
-        return BooksApi.store();
+    store(context, data) {
+        return BooksApi.store(data);
     }
 };
 

@@ -8,7 +8,7 @@
                         <v-input name="book-name" label="Book Name" :value="state.book.name" @update:value="state.book.name = $event.value" />
                     </div>
                     <div class="w-1/5">
-                        <v-input name="book-year" label="Book Year" :value="state.book.year" @update:value="state.book.year = $event.value" />
+                        <v-input name="book-year" label="Book Year" :value="state.book.year" @update:value="state.book.year = $event.value" maxlength="4" />
                     </div>
                 </div>
             </div>
@@ -40,7 +40,23 @@
                         <date-picker v-model="state.author.birth_date">
                             <template v-slot="{ inputValue, inputEvents }">
                                 <input
-                                class="bg-white border px-2 py-1 rounded"
+                                class="appearance-none
+                                        border border-gray-300
+                                        placeholder-gray-500
+                                        text-gray-900
+                                        w-full
+                                        px-3
+                                        py-2
+                                        rounded
+                                        mb-2
+                                        focus:outline-none
+                                        focus:ring-indigo-500
+                                        focus:border-indigo-300
+                                        focus:z-10
+                                        sm:text-sm
+                                        transition-colors
+                                        duration-300
+                                        ease-in-out"
                                 :value="inputValue"
                                 v-on="inputEvents"
                                 />
@@ -188,6 +204,8 @@ export default {
             }
 
             await store.dispatch('books/store', state.book);
+            // refresh table
+            await store.dispatch('books/search')
         }
 
         return {
