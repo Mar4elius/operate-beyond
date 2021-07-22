@@ -1,0 +1,36 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Author;
+use App\Models\Book;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
+
+class BookFactory extends Factory
+{
+    /**
+     * The name of the factory's corresponding model.
+     *
+     * @var string
+     */
+    protected $model = Book::class;
+
+    /**
+     * Define the model's default state.
+     *
+     * @return array
+     */
+    public function definition()
+    {
+        $authors = Author::all();
+
+        return [
+            'author_id' => $authors->random(1)
+                ->first()
+                ->id,
+            'name'      => $this->faker->title(),
+            'year'      => $this->faker->year(),
+        ];
+    }
+}
