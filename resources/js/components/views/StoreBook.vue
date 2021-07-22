@@ -1,5 +1,5 @@
 <template>
-            <h4>Create a New Book</h4>
+        <h4>Create a New Book</h4>
         <div class="w-full px-4 sm:px-6">
             <div class="w-full">
                 <h6 class="text-indigo-500">Book Details</h6>
@@ -15,7 +15,23 @@
 
             <div class="w-full">
                 <h6 class="text-indigo-500">Book Author</h6>
-                <div class="flex justify-start">
+                <div class="flex justify-between items-center">
+                    <div class="w-1/2 mr-5 flex">
+                        <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewAuthorFields">{{authorButtonText}}</v-button>
+                    </div>
+                    <div class="w-1/5 flex" v-if="!showNewAuthorFields">
+                        <span>OR</span>
+                    </div>
+                    <div class="w-1/2 " v-if="!showNewAuthorFields">
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing authors:</label>
+                        <Multiselect
+                            v-model="state.author"
+                            :options="state.authors"
+                            label="name"
+                            value-prop="id" />
+                    </div>
+                </div>
+                <div class="flex justify-start" v-if="showNewAuthorFields">
                     <div class="w-1/2 mr-5">
                         <v-input name="author-name" label="Author Name" :value="state.author.name" @update:value="state.author.name = $event.value" />
                     </div>
@@ -27,18 +43,59 @@
                     </div>
                 </div>
             </div>
+
+            <div class="w-full">
+                <h6 class="text-indigo-500">Library</h6>
+                <div class="flex justify-between items-center">
+                    <div class="w-1/2 mr-5 flex">
+                        <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewLibraryFields">{{libraryButtonText}}</v-button>
+                    </div>
+                    <div class="w-1/5 flex" v-if="!showNewLibraryFields">
+                        <span>OR</span>
+                    </div>
+                    <div class="w-1/2 " v-if="!showNewLibraryFields">
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing authors:</label>
+                        <Multiselect
+                            v-model="state.library"
+                            :options="state.libraries"
+                            label="name"
+                            value-prop="id" />
+                    </div>
+                </div>
+                <div class="flex justify-start" v-if="showNewLibraryFields">
+                    <div class="w-1/2 mr-5">
+                        <v-input name="library-name" label="Library Name" :value="state.library.name" @update:value="state.library.name = $event.value" />
+                    </div>
+                    <div class="w-1/2 mr-5">
+                        <v-input name="library-address" label="Library Address" :value="state.library.address" @update:value="state.library.address = $event.value" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full flex justify-center my-10">
+                <v-button id="add-book" size="regular" classes="mr-5" @btnOnClickEvent="storeBook">Create</v-button>
+                <v-button id="add-book" size="regular" type="danger" @btnOnClickEvent="closeModal">Cancel</v-button>
+            </div>
         </div>
 </template>
 <script>
-import { reactive } from '@vue/reactivity';
+// Vue
+import { reactive, ref } from '@vue/reactivity';
+import { useStore } from 'vuex';
+import { computed, onMounted } from '@vue/runtime-core';
 // Components
 import VInput from '../forms/VInput.vue';
+import Multiselect from '@vueform/multiselect'
+import VButton from '../forms/VButton.vue';
 export default {
     components: {
+        Multiselect,
+        VButton,
         VInput
     },
 
-    setup() {
+    setup(props, {emit}) {
+        const store = useStore();
         const state = reactive({
             book: {
                 name: null,
@@ -48,12 +105,62 @@ export default {
                 name: null,
                 birth_date: null,
                 genre: null
-            }
+            },
+            library: {
+                name: null,
+                address: null
+            },
+            authors: null,
+            libraries: null,
+            genres: null
+        })
+        const showNewAuthorFields = ref(false);
+        const showNewLibraryFields = ref(false);
+
+        const authorButtonText = computed(() => showNewAuthorFields.value ? 'Cancel' : 'Create New Author')
+        const libraryButtonText = computed(() => showNewLibraryFields.value ? 'Cancel' : 'Create New Library')
+
+        onMounted(async () => {
+            const authoresResponse = await store.dispatch('authors/search');
+            state.authors = authoresResponse.data.authors;
+            const librariesResponse = await store.dispatch('libraries/search');
+            state.libraries = librariesResponse.data.libraries;
         })
 
+        function displayNewAuthorFields() {
+            state.author = {
+                name: null,
+                birth_date: null,
+                genre: null
+            };
+
+            showNewAuthorFields.value = !showNewAuthorFields.value;
+        }
+
+        function displayNewLibraryFields() {
+            state.library = {
+                name: null,
+                address: null
+            };
+
+            showNewLibraryFields.value = !showNewLibraryFields.value;
+        }
+
+        function closeModal() {
+            emit('closeModal');
+        }
+
         return {
+            authorButtonText,
+            closeModal,
+            displayNewAuthorFields,
+            displayNewLibraryFields,
+            libraryButtonText,
+            showNewAuthorFields,
+            showNewLibraryFields,
             state
         }
     },
 }
 </script>
+<style src="@vueform/multiselect/themes/default.css"></style>

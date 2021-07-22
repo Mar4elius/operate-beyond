@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\AuthorController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\LibraryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,9 +23,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::prefix('v1')->group(function () {
+    // Books
     Route::prefix('books')->group(function () {
         Route::get('/search', [BookController::class, 'search']);
     });
-
     Route::resource('books', BookController::class);
+
+    // Authors
+    Route::prefix('authors')->group(function () {
+        Route::get('/search', [AuthorController::class, 'search']);
+    });
+    Route::resource('authors', AuthorController::class);
+
+    // Libraries
+    Route::prefix('libraries')->group(function () {
+        Route::get('/search', [LibraryController::class, 'search']);
+    });
+    Route::resource('libraries', LibraryController::class);
 });
