@@ -1,0 +1,19 @@
+build
+coverage
+# Tip! Base your .prettierignore on .gitignore and .eslintignore (if you have one).
+/node_modules
+/public/hot
+/public/storage
+/public/*
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
