@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Author;
+use Carbon\Carbon;
 
 class AuthorController extends Controller
 {
@@ -27,7 +28,11 @@ class AuthorController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $author = Author::create($request->all());
+        $author = new Author();
+        $author->name = $request->name;
+        $author->birth_date = Carbon::parse($request->birth_date);
+        $author->genre = $request->genre;
+        $author->save();
 
         return response()->json([
             'message'   => 'Author has been created.',

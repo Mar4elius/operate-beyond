@@ -31,12 +31,21 @@
                             value-prop="id" />
                     </div>
                 </div>
-                <div class="flex justify-start" v-if="showNewAuthorFields">
+                <div class="flex justify-between" v-if="showNewAuthorFields">
                     <div class="w-1/2 mr-5">
                         <v-input name="author-name" label="Author Name" :value="state.author.name" @update:value="state.author.name = $event.value" />
                     </div>
                     <div class="w-1/5 mr-5">
-                        <v-input name="author-birth-date" label="Author Birth Date" :value="state.author.birth_date" @update:value="state.author.birth_date = $event.value" />
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Author Birth Date</label>
+                        <date-picker v-model="state.author.birth_date">
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input
+                                class="bg-white border px-2 py-1 rounded"
+                                :value="inputValue"
+                                v-on="inputEvents"
+                                />
+                            </template>
+                        </date-picker>
                     </div>
                     <div class="w-1/5">
                         <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Author Genre</label>
@@ -90,8 +99,10 @@ import { computed, onMounted } from '@vue/runtime-core';
 import VInput from '../forms/VInput.vue';
 import Multiselect from '@vueform/multiselect'
 import VButton from '../forms/VButton.vue';
+import { DatePicker } from 'v-calendar';
 export default {
     components: {
+        DatePicker,
         Multiselect,
         VButton,
         VInput
