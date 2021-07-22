@@ -39,7 +39,10 @@
                         <v-input name="author-birth-date" label="Author Birth Date" :value="state.author.birth_date" @update:value="state.author.birth_date = $event.value" />
                     </div>
                     <div class="w-1/5">
-                        <v-input name="author-genre" label="Author Genre" :value="state.author.genre" @update:value="state.author.genre = $event.value" />
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Author Genre</label>
+                        <Multiselect
+                            v-model="state.author.genre"
+                            :options="genres" />
                     </div>
                 </div>
             </div>
@@ -114,8 +117,11 @@ export default {
             libraries: null,
             genres: null
         })
+
+        const genres = ['Fiction', 'Novel', 'Science Fiction', 'Narrative', 'Mystery']
         const showNewAuthorFields = ref(false);
         const showNewLibraryFields = ref(false);
+
 
         const authorButtonText = computed(() => showNewAuthorFields.value ? 'Cancel' : 'Create New Author')
         const libraryButtonText = computed(() => showNewLibraryFields.value ? 'Cancel' : 'Create New Library')
@@ -155,6 +161,7 @@ export default {
             closeModal,
             displayNewAuthorFields,
             displayNewLibraryFields,
+            genres,
             libraryButtonText,
             showNewAuthorFields,
             showNewLibraryFields,
