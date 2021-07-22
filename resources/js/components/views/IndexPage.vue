@@ -7,7 +7,7 @@
 		<div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 			<div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="w-full flex justify-end mb-5">
-                    <v-button id="add-book" size="regular" @btnOnClickEvent="showAddBookModal">Add Book</v-button>
+                    <v-button id="add-book" size="regular" @btnOnClickEvent="displayAddBookModal">Add Book</v-button>
                 </div>
 				<div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
 					<table class="min-w-full divide-y divide-gray-200">
@@ -109,18 +109,26 @@
 			</div>
 		</div>
 	</div>
+
+    <modal-layout :show="showAddBookModal" @close-modal="showAddBookModal = false">
+        <store-book />
+    </modal-layout>
 </template>
 
 <script>
 	// Vue
-    import { onMounted, reactive } from '@vue/runtime-core';
+    import { onMounted, reactive, ref } from '@vue/runtime-core';
 	import { useStore } from 'vuex';
     // Components
     import VButton from '../forms/VButton.vue';
+    import ModalLayout from '../layouts/ModalLayout.vue'
+    import StoreBook from '../views/StoreBook.vue'
 
 	export default {
         components: {
-            VButton
+            ModalLayout,
+            VButton,
+            StoreBook
         },
 
 		setup() {
@@ -129,6 +137,8 @@
 			const state = reactive({
 				books: null
 			});
+            const showAddBookModal = ref(false);
+
 			onMounted(async () => {
 				const response = await store.dispatch('books/search');
 				state.books = response.data.books;
@@ -142,11 +152,13 @@
 				//
 			}
 
-            function showAddBookModal() {
-                //
+            function displayAddBookModal() {
+                showAddBookModal.value = true;
             }
 
 			return {
+                displayAddBookModal,
+                showAddBookModal,
 				showEditModal,
 				showDestroyModal,
 				state
