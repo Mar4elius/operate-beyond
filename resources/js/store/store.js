@@ -1,13 +1,13 @@
-import { createStore, createLogger } from "vuex";
+import { createStore, createLogger } from 'vuex';
 // modules
 import books from './modules/books';
 
-const debug = process.env.NODE_ENV !== "production";
+const debug = process.env.NODE_ENV !== 'production';
 
 export default createStore({
-    modules: {
-        books
-    },
-    strict: debug,
-    plugins: debug ? [createLogger()] : [],
+	modules: {
+		books
+	},
+	strict: debug,
+	plugins: debug ? [createLogger()] : []
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Book;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -67,9 +69,13 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request)
+    public function search(): JsonResponse
     {
-        http_response_code(501);
-        dd('stop');
+        $books = Book::with(['author', 'libraries'])
+            ->get();
+
+        return response()->json([
+            'books' => $books
+        ]);
     }
 }

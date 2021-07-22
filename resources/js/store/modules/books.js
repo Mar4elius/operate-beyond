@@ -12,13 +12,13 @@ const getters = {
 
 // actions
 const actions = {
-    search() {
-        return BooksApi.search();
-    }
+	search() {
+		return BooksApi.search();
+	}
 };
 
 const mutations = {
-    //
+	//
 };
 
 export default {
