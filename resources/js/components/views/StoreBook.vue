@@ -16,7 +16,7 @@
             <div class="w-full">
                 <h6 class="text-indigo-500">Book Author</h6>
                 <div class="flex justify-between items-center">
-                    <div class="w-1/2 mr-5 flex">
+                    <div class="w-1/2 mr-5 flex py-5">
                         <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewAuthorFields">{{authorButtonText}}</v-button>
                     </div>
                     <div class="w-1/5 flex" v-if="!showNewAuthorFields">
@@ -50,14 +50,14 @@
             <div class="w-full">
                 <h6 class="text-indigo-500">Library</h6>
                 <div class="flex justify-between items-center">
-                    <div class="w-1/2 mr-5 flex">
+                    <div class="w-1/2 mr-5 py-5">
                         <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewLibraryFields">{{libraryButtonText}}</v-button>
                     </div>
                     <div class="w-1/5 flex" v-if="!showNewLibraryFields">
                         <span>OR</span>
                     </div>
                     <div class="w-1/2 " v-if="!showNewLibraryFields">
-                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing authors:</label>
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing Libraries:</label>
                         <Multiselect
                             v-model="state.library"
                             :options="state.libraries"
@@ -102,7 +102,9 @@ export default {
         const state = reactive({
             book: {
                 name: null,
-                year: null
+                year: null,
+                author_id: null,
+                library_id: null
             },
             author: {
                 name: null,
@@ -156,6 +158,27 @@ export default {
             emit('closeModal');
         }
 
+        async function storeBook() {
+            // not a number. User creates a new author
+            if (!Number.isInteger(state.author)) {
+                const authorsResponse = await store.dispatch('authors/store', state.author);
+                state.book.author_id = authorsResponse.data.author.id;
+            } else {
+                // assigne selected author to book
+                state.book.author_id = state.author;
+            }
+
+            const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
+            if (libraryHasValue) {
+                const libraryResponse = await store.dispatch('libraries/store', state.library);
+                state.book.library_id = libraryResponse.data.library.id;
+            } else if (Number.isInteger(state.library)) {
+                state.book.library_id = state.library;
+            }
+
+            await store.dispatch('books/store', state.book);
+        }
+
         return {
             authorButtonText,
             closeModal,
@@ -165,7 +188,8 @@ export default {
             libraryButtonText,
             showNewAuthorFields,
             showNewLibraryFields,
-            state
+            state,
+            storeBook
         }
     },
 }

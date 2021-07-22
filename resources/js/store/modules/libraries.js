@@ -14,6 +14,11 @@ const getters = {
 const actions = {
 	search() {
 		return LibrariesAPI.search();
+	},
+
+	store(context, data) {
+        console.log(data);
+		return LibrariesAPI.store(data);
 	}
 };
 

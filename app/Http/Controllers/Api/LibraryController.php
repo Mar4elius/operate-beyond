@@ -27,7 +27,12 @@ class LibraryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $library = Library::create($request->all());
+
+        return response()->json([
+            'message'       => 'Library has been created.',
+            'library'       => $library
+        ]);
     }
 
     /**

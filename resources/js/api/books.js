@@ -6,7 +6,16 @@ const BooksApi = {
 	 *
 	 * @return JSON response
 	 */
-	search: () => axios.get('api/v1/books/search')
+	search: () => axios.get('api/v1/books/search'),
+
+	/**
+	 * Store book
+	 *
+     * @param payload
+     *
+	 * @return JSON response
+	 */
+	store: () => axios.post('api/v1/books', payload),
 };
 
 export default BooksApi;

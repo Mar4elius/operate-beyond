@@ -11,6 +11,13 @@ class Library extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'address'];
+
+    /**
      * Get books that belong to library
      */
     public function books(): BelongsToMany

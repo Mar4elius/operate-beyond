@@ -14,6 +14,10 @@ const getters = {
 const actions = {
 	search() {
 		return AuthorsApi.search();
+	},
+
+	store(context, data) {
+		return AuthorsApi.store(data);
 	}
 };
 

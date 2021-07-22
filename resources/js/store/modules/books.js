@@ -14,7 +14,11 @@ const getters = {
 const actions = {
 	search() {
 		return BooksApi.search();
-	}
+	},
+
+    store() {
+        return BooksApi.store();
+    }
 };
 
 const mutations = {

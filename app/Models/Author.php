@@ -11,6 +11,13 @@ class Author extends Model
     use HasFactory;
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['name', 'birth_date', 'genre'];
+
+    /**
      * Get books for the author
      */
     public function books(): HasMany

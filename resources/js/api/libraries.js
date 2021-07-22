@@ -6,7 +6,16 @@ const LibrariesApi = {
 	 *
 	 * @return JSON response
 	 */
-	search: () => axios.get('api/v1/libraries/search')
+	search: () => axios.get('api/v1/libraries/search'),
+
+	/**
+	 * Store library
+	 *
+     * @param payload
+     *
+	 * @return JSON response
+	 */
+	store: (payload) => axios.post('api/v1/libraries/', payload)
 };
 
 export default LibrariesApi;
