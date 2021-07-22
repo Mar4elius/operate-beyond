@@ -29,7 +29,7 @@ class BookFactory extends Factory
             'author_id' => $authors->random(1)
                 ->first()
                 ->id,
-            'name'      => $this->faker->title(),
+            'name'      => $this->faker->sentence(6, true),
             'year'      => $this->faker->year(),
         ];
     }

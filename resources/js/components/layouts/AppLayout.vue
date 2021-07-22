@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen">
+  <div class="min-h-screen relative bg-white overflow-hidden">
     <!-- This will be the main layout where we will use slots to insert components we need for a page -->
     <header>
       <!-- Header contect comes here -->
