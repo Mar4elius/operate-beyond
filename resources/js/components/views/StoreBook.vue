@@ -234,6 +234,7 @@ export default {
                 resetValidationErrors();
                 // refresh table
                 await store.dispatch('books/search');
+                closeModal();
             }
         }
 
