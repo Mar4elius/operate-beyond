@@ -200,6 +200,7 @@ export default {
                 const authorsResponse = await store.dispatch('authors/store', state.author);
                 if (authorsResponse.status === 422) {
                     createValidationErrorsObject('Author', authorsResponse.data.errors);
+                    return;
                 } else {
                     resetValidationErrors();
                     state.book.author_id = authorsResponse.data.author.id;
@@ -216,6 +217,7 @@ export default {
                 const libraryResponse = await store.dispatch('libraries/store', state.library);
                 if (libraryResponse.status === 422) {
                     createValidationErrorsObject('Library', libraryResponse.data.errors);
+                    return;
                 } else {
                     resetValidationErrors();
                     state.book.library_id = libraryResponse.data.library.id;
