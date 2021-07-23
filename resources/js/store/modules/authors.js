@@ -13,11 +13,14 @@ const getters = {
 // actions
 const actions = {
 	search() {
-		return AuthorsApi.search();
+        return AuthorsApi.search();
 	},
 
-	store(context, data) {
-		return AuthorsApi.store(data);
+	async store(context, data) {
+		const response = AuthorsApi.store(data).catch(error => {
+            return error.response;
+        });
+        return response;
 	}
 };
 

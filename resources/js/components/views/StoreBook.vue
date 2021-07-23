@@ -1,5 +1,8 @@
 <template>
         <h4>Create a New Book</h4>
+        <div class="w-full">
+            <validation-errors :errors="state.validationErrors" />
+        </div>
         <div class="w-full px-4 sm:px-6">
             <div class="w-full">
                 <h6 class="text-indigo-500">Book Details</h6>
@@ -116,10 +119,12 @@ import VInput from '../forms/VInput.vue';
 import Multiselect from '@vueform/multiselect'
 import VButton from '../forms/VButton.vue';
 import { DatePicker } from 'v-calendar';
+import ValidationErrors from '../forms/ValidationErrors.vue';
 export default {
     components: {
         DatePicker,
         Multiselect,
+        ValidationErrors,
         VButton,
         VInput
     },
@@ -144,7 +149,11 @@ export default {
             },
             authors: null,
             libraries: null,
-            genres: null
+            genres: null,
+            validationErrors: {
+                errorsFor: '',
+                errors: [],
+            }
         })
 
         const genres = ['Fiction', 'Novel', 'Science Fiction', 'Narrative', 'Mystery']
@@ -189,23 +198,34 @@ export default {
             // not a number. User creates a new author
             if (!Number.isInteger(state.author)) {
                 const authorsResponse = await store.dispatch('authors/store', state.author);
-                state.book.author_id = authorsResponse.data.author.id;
+                if (authorsResponse.status === 422) {
+                    state.validationErrors = {
+                        errorsFor: 'Author',
+                        errors: authorsResponse.data.errors,
+                    }
+                } else {
+                    state.validationErrors = {
+                        errorsFor: '',
+                        errors: [],
+                    };
+                    state.book.author_id = authorsResponse.data.author.id;
+                }
             } else {
                 // assigne selected author to book
                 state.book.author_id = state.author;
             }
 
-            const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
-            if (libraryHasValue) {
-                const libraryResponse = await store.dispatch('libraries/store', state.library);
-                state.book.library_id = libraryResponse.data.library.id;
-            } else if (Number.isInteger(state.library)) {
-                state.book.library_id = state.library;
-            }
+            // const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
+            // if (libraryHasValue) {
+            //     const libraryResponse = await store.dispatch('libraries/store', state.library);
+            //     state.book.library_id = libraryResponse.data.library.id;
+            // } else if (Number.isInteger(state.library)) {
+            //     state.book.library_id = state.library;
+            // }
 
-            await store.dispatch('books/store', state.book);
-            // refresh table
-            await store.dispatch('books/search')
+            // await store.dispatch('books/store', state.book);
+            // // refresh table
+            // await store.dispatch('books/search')
         }
 
         return {

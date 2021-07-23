@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Author\StoreAuthorRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Author;
 use Carbon\Carbon;
+
 
 class AuthorController extends Controller
 {
@@ -23,10 +25,11 @@ class AuthorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StoreAuthorRequest  $request
+     *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreAuthorRequest $request): JsonResponse
     {
         $author = new Author();
         $author->name = $request->name;
