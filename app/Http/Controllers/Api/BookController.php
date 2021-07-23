@@ -46,7 +46,8 @@ class BookController extends Controller
         }
 
         return response()->json([
-            'message' => "Book has been saved."
+            'book'      => $book,
+            'message'   => "Book has been saved."
         ]);
     }
 
