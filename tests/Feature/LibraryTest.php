@@ -22,6 +22,18 @@ class LibraryTest extends TestCase
     }
 
     /**
+     * Test library search functionality
+     *
+     * @return void
+     */
+    public function test_library_search(): void
+    {
+        $response = $this->get('api/v1/libraries/search');
+        $response->assertStatus(200);
+        $this->assertIsArray($response['libraries']);
+    }
+
+    /**
      * Test Library store functionality
      *
      * @return void

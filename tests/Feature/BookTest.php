@@ -24,6 +24,18 @@ class BookTest extends TestCase
     }
 
     /**
+     * Test book search functionality
+     *
+     * @return void
+     */
+    public function test_book_search(): void
+    {
+        $response = $this->get('api/v1/books/search');
+        $response->assertStatus(200);
+        $this->assertIsArray($response['books']);
+    }
+
+    /**
      * Test Book store functionality with author provided
      *
      * @return void

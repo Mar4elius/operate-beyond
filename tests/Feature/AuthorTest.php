@@ -23,6 +23,18 @@ class AuthorTest extends TestCase
     }
 
     /**
+     * Test author search functionality
+     *
+     * @return void
+     */
+    public function test_author_search(): void
+    {
+        $response = $this->get('api/v1/authors/search');
+        $response->assertStatus(200);
+        $this->assertIsArray($response['authors']);
+    }
+
+    /**
      * Test Author store functionality
      *
      * @return void
