@@ -111,7 +111,7 @@
 	</div>
 
     <modal-layout :show="showAddBookModal" @close-modal="showAddBookModal = false">
-        <store-book />
+        <store-book @close-modal="showAddBookModal = false"/>
     </modal-layout>
 </template>
 
