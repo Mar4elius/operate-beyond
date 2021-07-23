@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Books\StoreBookRequest;
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Library;
@@ -25,10 +26,10 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\StoreBookRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreBookRequest $request): JsonResponse
     {
         $book = new Book();
 

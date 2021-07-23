@@ -160,7 +160,6 @@ export default {
         const showNewAuthorFields = ref(false);
         const showNewLibraryFields = ref(false);
 
-
         const authorButtonText = computed(() => showNewAuthorFields.value ? 'Cancel' : 'Create New Author')
         const libraryButtonText = computed(() => showNewLibraryFields.value ? 'Cancel' : 'Create New Library')
 
@@ -195,37 +194,59 @@ export default {
         }
 
         async function storeBook() {
+            // Store author first
             // not a number. User creates a new author
             if (!Number.isInteger(state.author)) {
                 const authorsResponse = await store.dispatch('authors/store', state.author);
                 if (authorsResponse.status === 422) {
-                    state.validationErrors = {
-                        errorsFor: 'Author',
-                        errors: authorsResponse.data.errors,
-                    }
+                    createValidationErrorsObject('Author', authorsResponse.data.errors);
                 } else {
-                    state.validationErrors = {
-                        errorsFor: '',
-                        errors: [],
-                    };
+                    resetValidationErrors();
                     state.book.author_id = authorsResponse.data.author.id;
                 }
             } else {
+                resetValidationErrors();
                 // assigne selected author to book
                 state.book.author_id = state.author;
             }
 
-            // const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
-            // if (libraryHasValue) {
-            //     const libraryResponse = await store.dispatch('libraries/store', state.library);
-            //     state.book.library_id = libraryResponse.data.library.id;
-            // } else if (Number.isInteger(state.library)) {
-            //     state.book.library_id = state.library;
-            // }
+            // Store library
+            const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
+            if (libraryHasValue) {
+                const libraryResponse = await store.dispatch('libraries/store', state.library);
+                if (libraryResponse.status === 422) {
+                    createValidationErrorsObject('Library', libraryResponse.data.errors);
+                } else {
+                    resetValidationErrors();
+                    state.book.library_id = libraryResponse.data.library.id;
+                }
+            } else if (Number.isInteger(state.library)) {
+                state.book.library_id = state.library;
+            }
 
-            // await store.dispatch('books/store', state.book);
-            // // refresh table
-            // await store.dispatch('books/search')
+            // Store Book
+            const bookResponse = await store.dispatch('books/store', state.book);
+            if (bookResponse.status === 422) {
+                createValidationErrorsObject('Book', bookResponse.data.errors);
+            } else {
+                resetValidationErrors();
+                // refresh table
+                await store.dispatch('books/search');
+            }
+        }
+
+        function createValidationErrorsObject(who, errors) {
+            state.validationErrors = {
+                errorsFor: who,
+                errors: errors,
+            }
+        }
+
+        function resetValidationErrors() {
+            state.validationErrors = {
+                errorsFor: '',
+                errors: [],
+            };
         }
 
         return {

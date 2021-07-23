@@ -17,10 +17,9 @@ const actions = {
 	},
 
 	async store(context, data) {
-		const response = AuthorsApi.store(data).catch(error => {
+		return AuthorsApi.store(data).catch(error => {
             return error.response;
         });
-        return response;
 	}
 };
 

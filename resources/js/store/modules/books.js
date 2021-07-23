@@ -17,7 +17,9 @@ const actions = {
 	},
 
     store(context, data) {
-        return BooksApi.store(data);
+        return BooksApi.store(data).catch(error => {
+            return error.response;
+        });
     }
 };
 

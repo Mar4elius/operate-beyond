@@ -17,8 +17,9 @@ const actions = {
 	},
 
 	store(context, data) {
-        console.log(data);
-		return LibrariesAPI.store(data);
+		return LibrariesAPI.store(data).catch(error => {
+            return error.response;
+        });
 	}
 };
 
