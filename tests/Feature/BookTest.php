@@ -86,4 +86,17 @@ class BookTest extends TestCase
         // Check if record is stored in the database
         $this->assertEquals($book->id, Book::find($book->id)->id);
     }
+
+    /**
+     * Test book destroy functionality
+     *
+     * @return void
+     */
+    public function test_book_destroy(): void
+    {
+        $book = Book::factory()->create();
+
+        $response = $this->delete("api/v1/books/{$book->id}");
+        $response->assertStatus(200);
+    }
 }

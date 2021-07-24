@@ -19,6 +19,7 @@ class CreateBooksTable extends Migration
             $table->string('name');
             $table->integer('year');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

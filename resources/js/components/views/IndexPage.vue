@@ -85,7 +85,7 @@
 											/>
 										</svg>
 									</button>
-									<button @click="showDestroyModal(book)">
+									<button @click="displayDestroyModal(book)">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											class="h-6 w-6 text-red-500"
@@ -109,9 +109,13 @@
 			</div>
 		</div>
 	</div>
-
+    <!-- Store modal -->
     <modal-layout :show="showAddBookModal" @close-modal="showAddBookModal = false">
-        <store-book @close-modal="showAddBookModal = false"/>
+        <store-book @close-modal="showAddBookModal = false" @refresh-table="searchBooks"/>
+    </modal-layout>
+    <!-- Destroy modal -->
+    <modal-layout :show="showDestroyBookModal" @close-modal="showDestroyBookModal = false">
+        <destroy-book :book="state.selectedBook" @close-modal="showDestroyBookModal = false" @refresh-table="searchBooks"/>
     </modal-layout>
 </template>
 
@@ -123,9 +127,11 @@
     import VButton from '../forms/VButton.vue';
     import ModalLayout from '../layouts/ModalLayout.vue'
     import StoreBook from '../views/StoreBook.vue'
+    import DestroyBook from '../views/DestroyBook.vue'
 
 	export default {
         components: {
+            DestroyBook,
             ModalLayout,
             VButton,
             StoreBook
@@ -135,21 +141,29 @@
 			//
 			const store = useStore();
 			const state = reactive({
-				books: null
+				books: null,
+                selectedBook: {
+                    name: ''
+                }
 			});
             const showAddBookModal = ref(false);
+            const showDestroyBookModal = ref(false);
 
-			onMounted(async () => {
-				const response = await store.dispatch('books/search');
+			onMounted(() => searchBooks());
+
+            async function searchBooks() {
+                console.log('search');
+                const response = await store.dispatch('books/search');
 				state.books = response.data.books;
-			});
+            }
 
 			function showEditModal(book) {
 				//
 			}
 
-			function showDestroyModal(book) {
-				//
+			function displayDestroyModal(book) {
+				state.selectedBook = book;
+                showDestroyBookModal.value = true;
 			}
 
             function displayAddBookModal() {
@@ -158,10 +172,12 @@
 
 			return {
                 displayAddBookModal,
+                displayDestroyModal,
                 showAddBookModal,
+                showDestroyBookModal,
 				showEditModal,
-				showDestroyModal,
-				state
+				state,
+                searchBooks
 			};
 		}
 	};

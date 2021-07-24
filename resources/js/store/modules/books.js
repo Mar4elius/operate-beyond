@@ -20,6 +20,10 @@ const actions = {
         return BooksApi.store(data).catch(error => {
             return error.response;
         });
+    },
+
+    destroy(context, data) {
+        return BooksApi.destroy(data);
     }
 };
 

@@ -235,6 +235,7 @@ export default {
                 // refresh table
                 await store.dispatch('books/search');
                 closeModal();
+                emit('refresh-table');
             }
         }
 

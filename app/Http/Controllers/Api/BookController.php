@@ -77,12 +77,18 @@ class BookController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  App\Models\Book $book
+     *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Book $book): JsonResponse
     {
-        //
+        $book->author()->dissociate();
+        $book->delete();
+
+        return response()->json([
+            'message' => "Book has been deleted."
+        ]);
     }
 
     /**

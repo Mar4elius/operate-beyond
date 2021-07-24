@@ -16,6 +16,15 @@ const BooksApi = {
 	 * @return JSON response
 	 */
 	store: (payload) => axios.post('api/v1/books', payload),
+
+	/**
+	 * Store book
+	 *
+     * @param payload
+     *
+	 * @return JSON response
+	 */
+	destroy: (payload) => axios.delete(`api/v1/books/${payload.id}`),
 };
 
 export default BooksApi;
