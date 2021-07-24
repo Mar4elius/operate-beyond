@@ -261,10 +261,15 @@ export default {
         }
 
         async function updateAuthor() {
-            await store.dispatch('authors/update', state.author);
-            const authoresResponse = await store.dispatch('authors/search');
-            state.authors = authoresResponse.data.authors;
-            emit('refreshTable');
+            const authoresUpdateResponse = await store.dispatch('authors/update', state.author);
+            if (authoresUpdateResponse.status == 422) {
+                createValidationErrorsObject('Author', authoresUpdateResponse.data.errors);
+            } else {
+                resetValidationErrors();
+                const authorSearchResponse = await store.dispatch('authors/search');
+                state.authors = authorSearchResponse.data.authors;
+                emit('refreshTable');
+            }
         }
 
         return {
