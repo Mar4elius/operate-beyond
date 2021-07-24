@@ -69,7 +69,7 @@
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-									<button @click="showEditModal(book)">
+									<button @click="displayEditModal(book)">
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
 											class="h-6 w-6"
@@ -113,6 +113,10 @@
     <modal-layout :show="showAddBookModal" @close-modal="showAddBookModal = false">
         <store-book @close-modal="showAddBookModal = false" @refresh-table="searchBooks"/>
     </modal-layout>
+    <!-- Edit modal -->
+    <modal-layout :show="showEditBookModal" @close-modal="showEditBookModal = false">
+        <edit-book @close-modal="showEditBookModal = false" @refresh-table="searchBooks" :book="state.selectedBook"/>
+    </modal-layout>
     <!-- Destroy modal -->
     <modal-layout :show="showDestroyBookModal" @close-modal="showDestroyBookModal = false">
         <destroy-book :book="state.selectedBook" @close-modal="showDestroyBookModal = false" @refresh-table="searchBooks"/>
@@ -128,13 +132,15 @@
     import ModalLayout from '../layouts/ModalLayout.vue'
     import StoreBook from '../views/StoreBook.vue'
     import DestroyBook from '../views/DestroyBook.vue'
+    import EditBook from '../views/EditBook.vue'
 
 	export default {
         components: {
             DestroyBook,
             ModalLayout,
             VButton,
-            StoreBook
+            StoreBook,
+            EditBook
         },
 
 		setup() {
@@ -148,17 +154,18 @@
 			});
             const showAddBookModal = ref(false);
             const showDestroyBookModal = ref(false);
+            const showEditBookModal = ref(false);
 
 			onMounted(() => searchBooks());
 
             async function searchBooks() {
-                console.log('search');
                 const response = await store.dispatch('books/search');
 				state.books = response.data.books;
             }
 
-			function showEditModal(book) {
-				//
+			function displayEditModal(book) {
+                state.selectedBook = book;
+				showEditBookModal.value = true;
 			}
 
 			function displayDestroyModal(book) {
@@ -173,9 +180,10 @@
 			return {
                 displayAddBookModal,
                 displayDestroyModal,
+                displayEditModal,
                 showAddBookModal,
                 showDestroyBookModal,
-				showEditModal,
+				showEditBookModal,
 				state,
                 searchBooks
 			};

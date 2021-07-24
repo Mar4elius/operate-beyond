@@ -9,7 +9,7 @@
       leave-to-class="opacity-0"
     >
       <div
-        v-show="showModal"
+        v-if="showModal"
         ref="modal-backdrop"
         class="fixed z-10 inset-0 overflow-y-auto bg-gray-500 bg-opacity-50"
       >
