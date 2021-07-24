@@ -68,7 +68,7 @@
                             :options="genres" />
                     </div>
                     <div class="w-1/5 mr-5 flex py-5">
-                            <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewAuthorFields">Update Author</v-button>
+                            <v-button id="add-book" size="regular" @btnOnClickEvent="updateAuthor">Update Author</v-button>
                     </div>
                 </div>
             </div>
@@ -163,7 +163,6 @@ export default {
         })
 
         const genres = ['Fiction', 'Novel', 'Science Fiction', 'Narrative', 'Mystery'];
-        const showNewAuthorFields = ref(false);
         const showNewLibraryFields = ref(false);
 
         const libraryButtonText = computed(() => showNewLibraryFields.value ? 'Cancel' : 'Create Library')
@@ -261,6 +260,13 @@ export default {
             };
         }
 
+        async function updateAuthor() {
+            await store.dispatch('authors/update', state.author);
+            const authoresResponse = await store.dispatch('authors/search');
+            state.authors = authoresResponse.data.authors;
+            emit('refreshTable');
+        }
+
         return {
             assignAuthorValues,
             closeModal,
@@ -269,7 +275,8 @@ export default {
             libraryButtonText,
             showNewLibraryFields,
             state,
-            storeBook
+            storeBook,
+            updateAuthor
         }
     },
 }

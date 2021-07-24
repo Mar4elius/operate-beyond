@@ -1,13 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+// Support
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Author\StoreAuthorRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Author;
 use Carbon\Carbon;
+// Models
+use App\Models\Author;
+// Request
+use App\Http\Requests\Author\StoreAuthorRequest;
+use App\Http\Requests\Author\UpdateAuthorRequest;
 
 
 class AuthorController extends Controller
@@ -25,7 +28,7 @@ class AuthorController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\StoreAuthorRequest  $request
+     * @param  App\Http\Requests\Author\StoreAuthorRequest  $request
      *
      * @return \Illuminate\Http\Response
      */
@@ -57,13 +60,21 @@ class AuthorController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  App\Http\Requests\Author\UpdateAuthorRequest
+     * @param  App\Models\Author $author
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateAuthorRequest $request, Author $author): JsonResponse
     {
-        //
+        $author->name = $request->name;
+        $author->birth_date = Carbon::parse($request->birth_date);
+        $author->genre = $request->genre;
+        $author->save();
+
+        return response()->json([
+            'message' => 'Author has been updated.',
+        ]);
     }
 
     /**

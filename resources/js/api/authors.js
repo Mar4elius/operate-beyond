@@ -16,6 +16,15 @@ const AuthorsApi = {
 	 * @return JSON response
 	 */
 	store: (payload) => axios.post('api/v1/authors', payload),
+
+	/**
+	 * Update author
+	 *
+     * @param payload
+     *
+	 * @return JSON response
+	 */
+	update: (payload) => axios.patch(`api/v1/authors/${payload.id}`, payload),
 };
 
 export default AuthorsApi;

@@ -20,6 +20,12 @@ const actions = {
 		return AuthorsApi.store(data).catch(error => {
             return error.response;
         });
+	},
+
+	async update(context, data) {
+		return AuthorsApi.update(data).catch(error => {
+            return error.response;
+        });
 	}
 };
 
