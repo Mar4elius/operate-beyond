@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+// Support
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Library\StoreLibraryRequest;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+// Models
 use App\Models\Library;
+// Requests
+use Illuminate\Http\Request;
+use App\Http\Requests\Library\StoreLibraryRequest;
+use App\Http\Requests\Library\UpdateLibraryRequest;
 
 class LibraryController extends Controller
 {
@@ -51,13 +54,20 @@ class LibraryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  App\Http\Requests\Library\UpdateLibraryRequest
+     * @param  App\Models\Library $library
+     *
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateLibraryRequest $request, Library $library): JsonResponse
     {
-        //
+        $library->name = $request->name;
+        $library->address = $request->address;
+        $library->save();
+
+        return response()->json([
+            'message' => 'Library has been updated.'
+        ]);
     }
 
     /**

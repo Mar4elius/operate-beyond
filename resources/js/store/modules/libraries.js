@@ -20,6 +20,12 @@ const actions = {
 		return LibrariesAPI.store(data).catch(error => {
             return error.response;
         });
+	},
+
+	update(context, data) {
+		return LibrariesAPI.update(data).catch(error => {
+            return error.response;
+        });
 	}
 };
 

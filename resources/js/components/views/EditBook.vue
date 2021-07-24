@@ -28,6 +28,7 @@
                             label="name"
                             value-prop="id" />
                     </div>
+                    <v-button id="add-book" size="regular" @btnOnClickEvent="updateAuthor">Update Author</v-button>
                 </div>
                 <div class="flex justify-between">
                     <div class="w-1/4 mr-5">
@@ -67,39 +68,32 @@
                             v-model="state.author.genre"
                             :options="genres" />
                     </div>
-                    <div class="w-1/5 mr-5 flex py-5">
-                            <v-button id="add-book" size="regular" @btnOnClickEvent="updateAuthor">Update Author</v-button>
-                    </div>
                 </div>
             </div>
 
-            <!-- <div class="w-full">
+            <div class="w-full">
                 <h6 class="text-indigo-500">Library</h6>
-                <div class="flex justify-between items-center">
-                    <div class="w-1/2 mr-5 py-5">
-                        <v-button id="add-book" size="regular" @btnOnClickEvent="displayNewLibraryFields">{{libraryButtonText}}</v-button>
-                    </div>
-                    <div class="w-1/5 flex" v-if="!showNewLibraryFields">
-                        <span>OR</span>
-                    </div>
-                    <div class="w-1/2 " v-if="!showNewLibraryFields">
+                <div class="flex justify-between items-end mb-5">
+                    <div class="w-1/2">
                         <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing Libraries:</label>
                         <Multiselect
-                            v-model="state.library"
+                            v-model="state.library.id"
                             :options="state.libraries"
+                            @input="assignLibraryValues"
                             label="name"
                             value-prop="id" />
                     </div>
                 </div>
-                <div class="flex justify-start" v-if="showNewLibraryFields">
-                    <div class="w-1/2 mr-5">
-                        <v-input name="library-name" label="Library Name" :value="state.library.name" @update:value="state.library.name = $event.value" />
+                <div class="flex justify-start items-center" v-for="(library, index) in state.libraries" :key="library.id">
+                    <div class="w-1/3 mr-5">
+                        <v-input name="library-name" label="Library Name" :value="state.libraries[index].name" @update:value="state.libraries[index].name = $event.value" />
                     </div>
-                    <div class="w-1/2 mr-5">
-                        <v-input name="library-address" label="Library Address" :value="state.library.address" @update:value="state.library.address = $event.value" />
+                    <div class="w-2/3 mr-5">
+                        <v-input name="library-address" label="Library Address" :value="state.libraries[index].address" @update:value="state.libraries[index].address = $event.value" />
                     </div>
+                    <v-button id="add-book" size="regular" @btnOnClickEvent="updateLibarary(state.libraries[index])">Update</v-button>
                 </div>
-            </div> -->
+            </div>
 
             <div class="w-full flex justify-center my-10">
                 <v-button id="add-book" size="regular" classes="mr-5" @btnOnClickEvent="storeBook">Update</v-button>
@@ -153,8 +147,9 @@ export default {
                 name: null,
                 address: null
             },
+            libraries: [], // array of objects
             authors: null,
-            libraries: null,
+            allLibraries: null,
             genres: null,
             validationErrors: {
                 errorsFor: '',
@@ -163,21 +158,23 @@ export default {
         })
 
         const genres = ['Fiction', 'Novel', 'Science Fiction', 'Narrative', 'Mystery'];
-        const showNewLibraryFields = ref(false);
-
-        const libraryButtonText = computed(() => showNewLibraryFields.value ? 'Cancel' : 'Create Library')
 
         onMounted(async () => {
             const authoresResponse = await store.dispatch('authors/search');
             state.authors = authoresResponse.data.authors;
             const librariesResponse = await store.dispatch('libraries/search');
-            state.libraries = librariesResponse.data.libraries;
+            state.allLibraries = librariesResponse.data.libraries;
 
             Object.keys(state.book).forEach(key => {
                 return state.book[key] = props.book[key];
             });
 
             assignAuthorValues(props.book.author_id);
+            // if libraries for the books exist
+            if (props.book.libraries.length) {
+                const librariesIds = props.book.libraries.map(library => library.id);
+                assignLibraryValues(librariesIds)
+            }
         });
 
         function assignAuthorValues(author_id) {
@@ -187,13 +184,15 @@ export default {
             });
         }
 
-        function displayNewLibraryFields() {
-            state.library = {
-                name: null,
-                address: null
-            };
-
-            showNewLibraryFields.value = !showNewLibraryFields.value;
+        function assignLibraryValues(ids) {
+            ids.forEach(id => {
+                const library = state.allLibraries.find(library => library.id === id);
+                state.libraries.push({
+                    id: library.id,
+                    name: library.name,
+                    address: library.address
+                });
+            });
         }
 
         function closeModal() {
@@ -262,7 +261,7 @@ export default {
 
         async function updateAuthor() {
             const authoresUpdateResponse = await store.dispatch('authors/update', state.author);
-            if (authoresUpdateResponse.status == 422) {
+            if (authoresUpdateResponse.status === 422) {
                 createValidationErrorsObject('Author', authoresUpdateResponse.data.errors);
             } else {
                 resetValidationErrors();
@@ -272,16 +271,28 @@ export default {
             }
         }
 
+        async function updateLibarary(library) {
+            console.log(library);
+            const librariesUpdateResponse = await store.dispatch('libraries/update', library);
+            if (librariesUpdateResponse.status === 422) {
+                createValidationErrorsObject(`Library ${library.name}`, librariesUpdateResponse.data.errors);
+            } else {
+                resetValidationErrors();
+                const librariesSearchResponse = await store.dispatch('libraries/search');
+                state.allLibraries = librariesSearchResponse.data.libraries;
+                emit('refreshTable');
+            }
+        }
+
         return {
             assignAuthorValues,
+            assignLibraryValues,
             closeModal,
-            displayNewLibraryFields,
             genres,
-            libraryButtonText,
-            showNewLibraryFields,
             state,
             storeBook,
-            updateAuthor
+            updateAuthor,
+            updateLibarary
         }
     },
 }
