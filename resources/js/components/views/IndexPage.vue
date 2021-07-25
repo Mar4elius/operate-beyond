@@ -148,9 +148,7 @@
 			const store = useStore();
 			const state = reactive({
 				books: null,
-                selectedBook: {
-                    name: ''
-                }
+                selectedBook: null
 			});
             const showAddBookModal = ref(false);
             const showDestroyBookModal = ref(false);
@@ -161,10 +159,6 @@
             async function searchBooks() {
                 const response = await store.dispatch('books/search');
 				state.books = response.data.books;
-                // update selected book if it exists
-                if (state.selectedBook?.name) {
-                    state.selectedBook = state.books.find(book => book.id === state.selectedBook.id);
-                }
             }
 
 			function displayEditModal(book) {

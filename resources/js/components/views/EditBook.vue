@@ -83,15 +83,15 @@
                             value-prop="id" />
                     </div>
                 </div>
-                <div class="flex justify-start items-center" v-for="(library, index) in state.libraries" :key="library.id">
+                <div class="flex justify-start items-center" v-for="library in state.libraries" :key="library.id">
                     <div class="w-1/3 mr-5">
-                        <v-input :name="`library-name${state.libraries[index].name}`" label="Library Name" :value="state.libraries[index].name" @update:value="state.libraries[index].name = $event.value" />
+                        <v-input :name="`library-name${library.name}`" label="Library Name" :value="library.name" @update:value="library.name = $event.value" />
                     </div>
                     <div class="w-2/3 mr-5">
-                        <v-input :name="`library-address${state.libraries[index].address}`" label="Library Address" :value="state.libraries[index].address" @update:value="state.libraries[index].address = $event.value" />
+                        <v-input :name="`library-address${library.address}`" label="Library Address" :value="library.address" @update:value="library.address = $event.value" />
                     </div>
-                    <v-button id="add-book" size="regular" :classes="`mr-5`" @btnOnClickEvent="updateLibarary(state.libraries[index])">Update</v-button>
-                    <v-button id="remove-book" size="regular" type="danger" @btnOnClickEvent="removeLibrary(state.libraries[index])">Remove</v-button>
+                    <v-button id="add-book" size="regular" :classes="`mr-5`" @btnOnClickEvent="updateLibarary(library)">Update</v-button>
+                    <v-button id="remove-book" size="regular" type="danger" @btnOnClickEvent="removeLibrary(library)">Remove</v-button>
                 </div>
             </div>
 
@@ -112,6 +112,7 @@ import Multiselect from '@vueform/multiselect'
 import VButton from '../forms/VButton.vue';
 import { DatePicker } from 'v-calendar';
 import ValidationErrors from '../forms/ValidationErrors.vue';
+
 export default {
     components: {
         DatePicker,
@@ -143,12 +144,6 @@ export default {
                 name: null,
                 birth_date: null,
                 genre: null
-            },
-            // for new library
-            library: {
-                id: null,
-                name: null,
-                address: null
             },
             libraries: [], // array of objects
             authors: null,
@@ -192,8 +187,11 @@ export default {
         }
 
         function assignLibraryValues(ids) {
+            // reset all values before assigning new
+            state.libraries = [];
             ids.forEach(id => {
                 const library = state.allLibraries.find(library => library.id === id);
+
                 state.libraries.push({
                     id: library.id,
                     name: library.name,
@@ -231,8 +229,12 @@ export default {
                 createValidationErrorsObject('Book', bookUpdateResponse.data.errors);
             } else {
                 resetValidationErrors();
-                await store.dispatch('books/search');
                 emit('refresh-table');
+                if (state.book.library_id) {
+                    const library = state.allLibraries.find(l => l.id === state.book.library_id);
+                    state.book.library_id = null;
+                    state.libraries.push(library);
+                }
             }
         }
 
@@ -256,8 +258,6 @@ export default {
                 resetValidationErrors();
                 const librariesSearchResponse = await store.dispatch('libraries/search');
                 state.allLibraries = librariesSearchResponse.data.libraries;
-                // refresh libraries
-                assignLibraryValues();
                 emit('refreshTable');
             }
         }
@@ -268,7 +268,6 @@ export default {
 
         return {
             assignAuthorValues,
-            assignLibraryValues,
             notSelectedLibraries,
             closeModal,
             genres,
