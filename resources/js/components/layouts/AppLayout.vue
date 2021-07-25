@@ -7,7 +7,7 @@
 		</header>
 		<main>
 			<!-- Main content comes here -->
-			<div class="max-w-7xl mx-auto px-4 sm:px-6">
+			<div class="w-full mx-auto px-4 sm:px-6">
 				<slot name="main"> Main Content </slot>
 			</div>
 		</main>

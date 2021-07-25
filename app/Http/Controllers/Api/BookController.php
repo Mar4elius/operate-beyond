@@ -81,6 +81,12 @@ class BookController extends Controller
         $book->author()->associate($author);
         $book->save();
 
+        // sync many-to-many on libraries
+        if (!empty($request->libraries)) {
+            $ids = array_column($request->libraries, 'id');
+            $book->libraries()->sync($ids);
+        }
+
         if (isset($request->library_id)) {
             $library = Library::find($request->library_id);
             $book->libraries()->attach($library->id);

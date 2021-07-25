@@ -90,7 +90,8 @@
                     <div class="w-2/3 mr-5">
                         <v-input :name="`library-address${state.libraries[index].address}`" label="Library Address" :value="state.libraries[index].address" @update:value="state.libraries[index].address = $event.value" />
                     </div>
-                    <v-button id="add-book" size="regular" @btnOnClickEvent="updateLibarary(state.libraries[index])">Update</v-button>
+                    <v-button id="add-book" size="regular" :classes="`mr-5`" @btnOnClickEvent="updateLibarary(state.libraries[index])">Update</v-button>
+                    <v-button id="remove-book" size="regular" type="danger" @btnOnClickEvent="removeLibrary(state.libraries[index])">Remove</v-button>
                 </div>
             </div>
 
@@ -135,7 +136,7 @@ export default {
                 name: null,
                 year: null,
                 author_id: null,
-                library_id: null
+                library_id: null,
             },
             author: {
                 id: null,
@@ -220,7 +221,12 @@ export default {
         }
 
         async function updateBook() {
-            const bookUpdateResponse = await store.dispatch('books/update', state.book);
+            const data = {
+                ...state.book,
+                libraries: state.libraries
+            }
+
+            const bookUpdateResponse = await store.dispatch('books/update', data);
             if (bookUpdateResponse.status === 422) {
                 createValidationErrorsObject('Book', bookUpdateResponse.data.errors);
             } else {
@@ -243,7 +249,6 @@ export default {
         }
 
         async function updateLibarary(library) {
-            console.log(library);
             const librariesUpdateResponse = await store.dispatch('libraries/update', library);
             if (librariesUpdateResponse.status === 422) {
                 createValidationErrorsObject(`Library ${library.name}`, librariesUpdateResponse.data.errors);
@@ -257,6 +262,10 @@ export default {
             }
         }
 
+        function removeLibrary(library) {
+            state.libraries = state.libraries.filter(l => l.id !== library.id);
+        }
+
         return {
             assignAuthorValues,
             assignLibraryValues,
@@ -266,7 +275,8 @@ export default {
             state,
             updateBook,
             updateAuthor,
-            updateLibarary
+            updateLibarary,
+            removeLibrary
         }
     },
 }
