@@ -61,17 +61,17 @@ class AuthorTest extends TestCase
         $new_author = Author::factory()->create();
 
         $new_author->name = 'Update Test Author';
-        $new_author->birth_date = Carbon::now();
-        $new_author->genre =  $new_author->genre != 'Fiction' ?: 'Novel'; // so to avoid `Failed asserting that a row in the table [authors] matches the attributes` error
+        $new_author->birth_date = '1921-07-25';
+        $new_author->genre = 'Fiction';
 
         $response = $this->patch("api/v1/authors/{$new_author->id}", $new_author->toArray());
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('authors', [
-            'id' => $new_author->id,
-            'name' => 'Update Test Author',
-            'birth_date'  => Carbon::now(),
-            'genre'  => 'Fiction'
+            'id'            => $new_author->id,
+            'name'          => 'Update Test Author',
+            'birth_date'    => '1921-07-25',
+            'genre'         => 'Fiction'
         ]);
     }
 }

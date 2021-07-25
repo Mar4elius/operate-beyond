@@ -22,7 +22,7 @@
                     <div class="w-1/2 mb-5">
                         <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing authors:</label>
                         <Multiselect
-                            v-model="state.author.id"
+                            v-model="state.book.author_id"
                             :options="state.authors"
                             @input="assignAuthorValues"
                             label="name"
@@ -75,35 +75,34 @@
                 <h6 class="text-indigo-500">Library</h6>
                 <div class="flex justify-between items-end mb-5">
                     <div class="w-1/2">
-                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Select from existing Libraries:</label>
+                        <label class="block mb-2 md:mb-3 w-full text-md font-medium text-gray-700">Add another library to book:</label>
                         <Multiselect
-                            v-model="state.library.id"
-                            :options="state.libraries"
-                            @input="assignLibraryValues"
+                            v-model="state.book.library_id"
+                            :options="notSelectedLibraries"
                             label="name"
                             value-prop="id" />
                     </div>
                 </div>
                 <div class="flex justify-start items-center" v-for="(library, index) in state.libraries" :key="library.id">
                     <div class="w-1/3 mr-5">
-                        <v-input name="library-name" label="Library Name" :value="state.libraries[index].name" @update:value="state.libraries[index].name = $event.value" />
+                        <v-input :name="`library-name${state.libraries[index].name}`" label="Library Name" :value="state.libraries[index].name" @update:value="state.libraries[index].name = $event.value" />
                     </div>
                     <div class="w-2/3 mr-5">
-                        <v-input name="library-address" label="Library Address" :value="state.libraries[index].address" @update:value="state.libraries[index].address = $event.value" />
+                        <v-input :name="`library-address${state.libraries[index].address}`" label="Library Address" :value="state.libraries[index].address" @update:value="state.libraries[index].address = $event.value" />
                     </div>
                     <v-button id="add-book" size="regular" @btnOnClickEvent="updateLibarary(state.libraries[index])">Update</v-button>
                 </div>
             </div>
 
             <div class="w-full flex justify-center my-10">
-                <v-button id="add-book" size="regular" classes="mr-5" @btnOnClickEvent="storeBook">Update</v-button>
+                <v-button id="add-book" size="regular" classes="mr-5" @btnOnClickEvent="updateBook">Update</v-button>
                 <v-button id="add-book" size="regular" type="danger" @btnOnClickEvent="closeModal">Cancel</v-button>
             </div>
         </div>
 </template>
 <script>
 // Vue
-import { reactive, ref } from '@vue/reactivity';
+import { reactive } from '@vue/reactivity';
 import { useStore } from 'vuex';
 import { computed, onMounted } from '@vue/runtime-core';
 // Components
@@ -132,6 +131,7 @@ export default {
         const store = useStore();
         const state = reactive({
             book: {
+                id: null,
                 name: null,
                 year: null,
                 author_id: null,
@@ -143,13 +143,15 @@ export default {
                 birth_date: null,
                 genre: null
             },
+            // for new library
             library: {
+                id: null,
                 name: null,
                 address: null
             },
             libraries: [], // array of objects
             authors: null,
-            allLibraries: null,
+            allLibraries: [],
             genres: null,
             validationErrors: {
                 errorsFor: '',
@@ -158,6 +160,10 @@ export default {
         })
 
         const genres = ['Fiction', 'Novel', 'Science Fiction', 'Narrative', 'Mystery'];
+        const notSelectedLibraries = computed(() => state.allLibraries.filter(library => {
+            const ids = state.libraries.map(l => l.id);
+            return !ids.includes(library.id)
+        }));
 
         onMounted(async () => {
             const authoresResponse = await store.dispatch('authors/search');
@@ -173,7 +179,7 @@ export default {
             // if libraries for the books exist
             if (props.book.libraries.length) {
                 const librariesIds = props.book.libraries.map(library => library.id);
-                assignLibraryValues(librariesIds)
+                assignLibraryValues(librariesIds);
             }
         });
 
@@ -199,52 +205,6 @@ export default {
             emit('closeModal');
         }
 
-        async function storeBook() {
-            // Store author first
-            // not a number. User creates a new author
-            if (!Number.isInteger(state.author)) {
-                const authorsResponse = await store.dispatch('authors/store', state.author);
-                if (authorsResponse.status === 422) {
-                    createValidationErrorsObject('Author', authorsResponse.data.errors);
-                    return;
-                } else {
-                    resetValidationErrors();
-                    state.book.author_id = authorsResponse.data.author.id;
-                }
-            } else {
-                resetValidationErrors();
-                // assigne selected author to book
-                state.book.author_id = state.author;
-            }
-
-            // Store library
-            const libraryHasValue = Object.keys(state.library).some(key => state.library[key] !== null);
-            if (libraryHasValue) {
-                const libraryResponse = await store.dispatch('libraries/store', state.library);
-                if (libraryResponse.status === 422) {
-                    createValidationErrorsObject('Library', libraryResponse.data.errors);
-                    return;
-                } else {
-                    resetValidationErrors();
-                    state.book.library_id = libraryResponse.data.library.id;
-                }
-            } else if (Number.isInteger(state.library)) {
-                state.book.library_id = state.library;
-            }
-
-            // Store Book
-            const bookResponse = await store.dispatch('books/store', state.book);
-            if (bookResponse.status === 422) {
-                createValidationErrorsObject('Book', bookResponse.data.errors);
-            } else {
-                resetValidationErrors();
-                // refresh table
-                await store.dispatch('books/search');
-                closeModal();
-                emit('refresh-table');
-            }
-        }
-
         function createValidationErrorsObject(who, errors) {
             state.validationErrors = {
                 errorsFor: who,
@@ -257,6 +217,17 @@ export default {
                 errorsFor: '',
                 errors: [],
             };
+        }
+
+        async function updateBook() {
+            const bookUpdateResponse = await store.dispatch('books/update', state.book);
+            if (bookUpdateResponse.status === 422) {
+                createValidationErrorsObject('Book', bookUpdateResponse.data.errors);
+            } else {
+                resetValidationErrors();
+                await store.dispatch('books/search');
+                emit('refresh-table');
+            }
         }
 
         async function updateAuthor() {
@@ -280,6 +251,8 @@ export default {
                 resetValidationErrors();
                 const librariesSearchResponse = await store.dispatch('libraries/search');
                 state.allLibraries = librariesSearchResponse.data.libraries;
+                // refresh libraries
+                assignLibraryValues();
                 emit('refreshTable');
             }
         }
@@ -287,10 +260,11 @@ export default {
         return {
             assignAuthorValues,
             assignLibraryValues,
+            notSelectedLibraries,
             closeModal,
             genres,
             state,
-            storeBook,
+            updateBook,
             updateAuthor,
             updateLibarary
         }

@@ -1,15 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Api;
-
+// Support
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Books\StoreBookRequest;
+use Illuminate\Http\JsonResponse;
+// Models
 use App\Models\Author;
 use App\Models\Book;
 use App\Models\Library;
-use Illuminate\Http\JsonResponse;
+// Requests
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Books\StoreBookRequest;
+use App\Http\Requests\Books\UpdateBookRequest;
 
 class BookController extends Controller
 {
@@ -65,13 +67,28 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  App\Http\Requests\Books\UpdateBookRequest $request
+     * @param  App\Models\Book $book
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookRequest $request, Book $book): JsonResponse
     {
-        //
+        Book::find($book->id)->author()->dissociate();
+        $book->name = $request->name;
+        $book->year = $request->year;
+
+        $author = Author::find($request->author_id);
+        $book->author()->associate($author);
+        $book->save();
+
+        if (isset($request->library_id)) {
+            $library = Library::find($request->library_id);
+            $book->libraries()->attach($library->id);
+        }
+
+        return response()->json([
+            'message' => 'Book has been updated.'
+        ]);
     }
 
     /**

@@ -22,6 +22,12 @@ const actions = {
         });
     },
 
+    update(context, data) {
+        return BooksApi.update(data).catch(error => {
+            return error.response;
+        });
+    },
+
     destroy(context, data) {
         return BooksApi.destroy(data);
     }

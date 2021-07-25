@@ -48,4 +48,26 @@ class LibraryTest extends TestCase
         $library = $response->getOriginalContent()['library'];
         $this->assertEquals($library->id, Library::find($library->id)->id);
     }
+
+    /**
+     * Test Library update functionality
+     *
+     * @return void
+     */
+    public function test_library_update(): void
+    {
+        $new_library = Library::factory()->create();
+
+        $new_library->name = 'Update Test Library';
+        $new_library->address = 'Update Test Library Address';
+
+        $response = $this->patch("api/v1/libraries/{$new_library->id}", $new_library->toArray());
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('libraries', [
+            'id'            => $new_library->id,
+            'name'          => 'Update Test Library',
+            'address'    => 'Update Test Library Address',
+        ]);
+    }
 }

@@ -99,4 +99,53 @@ class BookTest extends TestCase
         $response = $this->delete("api/v1/books/{$book->id}");
         $response->assertStatus(200);
     }
+
+    /**
+     * Test Book update functionality
+     *
+     * @return void
+     */
+    public function test_book_update_with_author(): void
+    {
+        $new_book = Book::factory()->create();
+
+        $new_book->name = 'Update Test Book';
+        $new_book->author_id = $new_book->author_id !== '1' ?: 1;
+        $new_book->year = 9999;
+
+        $response = $this->patch("api/v1/books/{$new_book->id}", $new_book->toArray());
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('books', [
+            'id'            => $new_book->id,
+            'name'          => 'Update Book Library',
+            'author_id'     => '1',
+            'year'          => 9999,
+        ]);
+    }
+
+    /**
+     * Test Book update functionality
+     *
+     * @return void
+     */
+    public function test_book_update_with_library(): void
+    {
+        $new_book = Book::factory()->create();
+
+        $new_book->name = 'Update Test Book';
+        $new_book->author_id = $new_book->author_id != '1' ?: 1;
+        $new_book->year = 9999;
+        $new_book->library_id = '1';
+
+        $response = $this->patch("api/v1/books/{$new_book->id}", $new_book->toArray());
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('books', [
+            'id'            => $new_book->id,
+            'name'          => 'Update Book Library',
+            'author_id'     => '1',
+            'year'          => 9999,
+        ]);
+    }
 }

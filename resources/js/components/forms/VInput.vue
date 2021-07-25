@@ -70,7 +70,7 @@ export default {
 
     maxlength: {
         type: Number,
-        default: '524288'
+        default: 524288
     }
   },
   setup(props, { emit }) {

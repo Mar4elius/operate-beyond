@@ -18,7 +18,16 @@ const BooksApi = {
 	store: (payload) => axios.post('api/v1/books', payload),
 
 	/**
-	 * Store book
+	 * Update book
+	 *
+     * @param payload
+     *
+	 * @return JSON response
+	 */
+	update: (payload) => axios.patch(`api/v1/books/${payload.id}`, payload),
+
+	/**
+	 * Destroy book
 	 *
      * @param payload
      *
