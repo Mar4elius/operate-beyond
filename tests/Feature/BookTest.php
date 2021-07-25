@@ -110,7 +110,7 @@ class BookTest extends TestCase
         $new_book = Book::factory()->create();
 
         $new_book->name = 'Update Test Book';
-        $new_book->author_id = $new_book->author_id !== '1' ?: 1;
+        $new_book->author_id = $new_book->author_id === 1 ?: 2;
         $new_book->year = 9999;
 
         $response = $this->patch("api/v1/books/{$new_book->id}", $new_book->toArray());
@@ -118,8 +118,8 @@ class BookTest extends TestCase
 
         $this->assertDatabaseHas('books', [
             'id'            => $new_book->id,
-            'name'          => 'Update Book Library',
-            'author_id'     => '1',
+            'name'          => 'Update Test Book',
+            'author_id'     => $new_book->author_id,
             'year'          => 9999,
         ]);
     }
@@ -132,11 +132,12 @@ class BookTest extends TestCase
     public function test_book_update_with_library(): void
     {
         $new_book = Book::factory()->create();
+        $new_library = Library::factory()->create();
 
-        $new_book->name = 'Update Test Book';
-        $new_book->author_id = $new_book->author_id != '1' ?: 1;
+        $new_book->name = 'Update Book Library';
+        $new_book->author_id = $new_book->author_id === 1 ?: 2;
         $new_book->year = 9999;
-        $new_book->library_id = '1';
+        $new_book->library_id = $new_library->id;
 
         $response = $this->patch("api/v1/books/{$new_book->id}", $new_book->toArray());
         $response->assertStatus(200);
@@ -144,7 +145,7 @@ class BookTest extends TestCase
         $this->assertDatabaseHas('books', [
             'id'            => $new_book->id,
             'name'          => 'Update Book Library',
-            'author_id'     => '1',
+            'author_id'     => $new_book->author_id,
             'year'          => 9999,
         ]);
     }
