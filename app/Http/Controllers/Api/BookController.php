@@ -82,7 +82,7 @@ class BookController extends Controller
         $book->save();
 
         // sync many-to-many on libraries
-        if (!empty($request->libraries)) {
+        if (isset($request->libraries)) {
             $ids = array_column($request->libraries, 'id');
             $book->libraries()->sync($ids);
         }
